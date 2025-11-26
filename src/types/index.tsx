@@ -1,23 +1,23 @@
-import { ReactNode } from "react";
+import {
+  ButtonHTMLAttributes,
+  FormHTMLAttributes,
+  InputHTMLAttributes,
+  ReactNode,
+} from "react";
+import { TodoPermissions } from "@/utils/rbac";
 
-export interface inputProps {
+export interface inputProps extends InputHTMLAttributes<HTMLInputElement> {
   name: string;
   type: string;
-  placeholder?: string;
-  value?: string;
 }
 
-export interface formProps {
+export interface formProps extends FormHTMLAttributes<HTMLFormElement> {
   children: ReactNode;
-  action: (formData: FormData) => void;
-  className?: string;
-  onSubmit?: () => void;
+  action: (formData: FormData) => void | Promise<void>;
 }
 
-export interface buttonProps {
-  type?: "button" | "submit" | "reset";
+export interface buttonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   text: string | ReactNode;
-  onClick?: () => void;
   actionButton?: boolean;
   bgColor?: string;
 }
@@ -27,4 +27,8 @@ export interface todoProps {
   title?: string | null;
   isCompleted: boolean;
   createdAt?: Date;
+  userId: string | null;
+  ownerEmail?: string | null;
+  permissions: TodoPermissions;
+  isOwner: boolean;
 }
