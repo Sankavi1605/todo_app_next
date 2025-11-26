@@ -7,7 +7,7 @@ import { ROLE_VALUES } from "@/utils/rbac";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: "mongodb" }),
-  secret: process.env.BETTER_AUTH_SECRET,
+  secret: process.env.BETTER_AUTH_SECRET || "fallback-secret-for-build-only-change-in-production",
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,

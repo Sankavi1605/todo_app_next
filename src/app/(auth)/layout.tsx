@@ -9,9 +9,14 @@ export default async function AuthLayout({
 }: {
   children: ReactNode;
 }) {
-  const session = await getCurrentSession();
-  if (session?.session) {
-    redirect("/");
+  try {
+    const session = await getCurrentSession();
+    if (session?.session) {
+      redirect("/");
+    }
+  } catch (error) {
+    // During build time or if auth fails, just render the page
+    console.error("Auth check failed:", error);
   }
 
   return <>{children}</>;

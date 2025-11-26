@@ -47,35 +47,40 @@ async function getData({ role, userId }: { role: Role; userId: string }) {
 }
 
 export default async function Home() {
-  const session = await getCurrentSession();
-  if (!session?.session || !session?.user) {
+  try {
+    const session = await getCurrentSession();
+    if (!session?.session || !session?.user) {
+      redirect("/login");
+    }
+    const role = (session.user.role || "USER") as Role;
+    const userId = session.user.id as string;
+    const data = await getData({ role, userId });
+    return (
+      <div className=" w-screen py-20 flex justify-center flex-col items-center">
+        <div className="flex w-full max-w-3xl items-center justify-between px-6">
+          <div>
+            <span className="text-4xl font-extrabold uppercase">Todo App</span>
+            <p className="mt-2 text-sm text-slate-400">
+              You are signed in as <strong>{describeRole(role)}</strong>
+            </p>
+          </div>
+          <SignOutButton />
+        </div>
+        <div className="flex justify-center flex-col items-center">
+          <AddTodo />
+
+          <div className="flex flex-col gap-5 items-center justify-center mt-10 w-screen">
+            {data.map((todo, id) => (
+              <div className="w-full" key={id}>
+                <Todo todo={todo} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  } catch (error) {
+    console.error("Error loading home page:", error);
     redirect("/login");
   }
-  const role = (session.user.role || "USER") as Role;
-  const userId = session.user.id as string;
-  const data = await getData({ role, userId });
-  return (
-    <div className=" w-screen py-20 flex justify-center flex-col items-center">
-      <div className="flex w-full max-w-3xl items-center justify-between px-6">
-        <div>
-          <span className="text-4xl font-extrabold uppercase">Todo App</span>
-          <p className="mt-2 text-sm text-slate-400">
-            You are signed in as <strong>{describeRole(role)}</strong>
-          </p>
-        </div>
-        <SignOutButton />
-      </div>
-      <div className="flex justify-center flex-col items-center">
-        <AddTodo />
-
-        <div className="flex flex-col gap-5 items-center justify-center mt-10 w-screen">
-          {data.map((todo, id) => (
-            <div className="w-full" key={id}>
-              <Todo todo={todo} />
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
 }
