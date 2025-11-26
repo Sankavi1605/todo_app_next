@@ -43,23 +43,28 @@ export const auth = betterAuth({
 export const authHandler = toNextJsHandler(auth.handler);
 
 export async function getCurrentSession() {
-  const headerList = headers();
-  const cookieStore = cookies();
-  const combinedHeaders = new Headers();
-  headerList.forEach((value, key) => {
-    combinedHeaders.append(key, value);
-  });
+  try {
+    const headerList = headers();
+    const cookieStore = cookies();
+    const combinedHeaders = new Headers();
+    headerList.forEach((value, key) => {
+      combinedHeaders.append(key, value);
+    });
 
-  if (!combinedHeaders.has("cookie")) {
-    const serializedCookies = cookieStore
-      .getAll()
-      .map(({ name, value }) => `${name}=${value}`)
-      .join("; ");
+    if (!combinedHeaders.has("cookie")) {
+      const serializedCookies = cookieStore
+        .getAll()
+        .map(({ name, value }) => `${name}=${value}`)
+        .join("; ");
 
-    if (serializedCookies) {
-      combinedHeaders.set("cookie", serializedCookies);
+      if (serializedCookies) {
+        combinedHeaders.set("cookie", serializedCookies);
+      }
     }
-  }
 
-  return auth.api.getSession({ headers: combinedHeaders });
+    return await auth.api.getSession({ headers: combinedHeaders });
+  } catch (error) {
+    console.error("Failed to get current session:", error);
+    return null;
+  }
 }
